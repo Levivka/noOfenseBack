@@ -19,7 +19,6 @@ mod db;
 mod dto;
 mod models;
 mod services;
-mod sockets;
 
 const MONGOURL: &str = "mongodb://levik:123@mongo.desq.com.ru/dnd-helper";
 const PORT: &str = "8083";
@@ -39,7 +38,9 @@ async fn main() -> std::io::Result<()> {
             .service(
                 web::resource("/users/add").route(web::post().to(services::users::add::user_add)),
             )
-            .service(web::resource("/login").route(web::post().to(services::users::login::login)))
+            .service(
+                web::resource("/users/login").route(web::post().to(services::users::login::login)),
+            )
     })
     .bind(format!("{}:{}", Ipv4Addr::LOCALHOST, PORT))?
     .run()

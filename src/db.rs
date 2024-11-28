@@ -39,10 +39,24 @@ impl Db {
         self.users.insert_one(user).await
     }
 
-    pub async fn find_by_login_and_password(&self, login: &String, password: &String ) -> Result<Option<User>, Error> {
-        self.users.find_one(doc! {
-            "nickname": login,
-            "password": password
-        }).await
+    pub async fn login_check(&self, login: &String) -> Result<Option<User>, Error> {
+        self.users
+            .find_one(doc! {
+                "login": login,
+            })
+            .await
+    }
+
+    pub async fn find_by_login_and_password(
+        &self,
+        login: &String,
+        password: &String,
+    ) -> Result<Option<User>, Error> {
+        self.users
+            .find_one(doc! {
+                "login": login,
+                "password": password
+            })
+            .await
     }
 }
