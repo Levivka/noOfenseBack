@@ -13,6 +13,7 @@ use mongodb::{
     error::Error,
     Client, Collection,
 };
+use services::bids::list::bids_list;
 use std::net::Ipv4Addr;
 
 mod db;
@@ -40,6 +41,9 @@ async fn main() -> std::io::Result<()> {
             )
             .service(
                 web::resource("/users/login").route(web::post().to(services::users::login::login)),
+            )
+            .service(
+                web::resource("/bids/list").route(web::get().to(services::bids::list::bids_list)),
             )
     })
     .bind(format!("{}:{}", Ipv4Addr::LOCALHOST, PORT))?

@@ -5,10 +5,12 @@ use mongodb::results::InsertOneResult;
 use mongodb::{Client, Collection};
 use std::result::Result;
 
+use crate::models::bid::Bid;
 use crate::models::user::User;
 
 pub struct Db {
     users: Collection<User>,
+    bids: Collection<Bid>,
 }
 
 impl Db {
@@ -16,6 +18,7 @@ impl Db {
         match Client::with_uri_str(url).await {
             Ok(client) => Ok(Self {
                 users: client.database("dnd-helper").collection("offenseUsers"),
+                bids: client.database("dnd-helper").collection("offenseBids"),
             }),
             Err(e) => Err(e),
         }
@@ -58,5 +61,19 @@ impl Db {
                 "password": password
             })
             .await
+    }
+
+    pub async fn list_bids(&self) -> Result<Option<Vec<Bid>>, Error> {
+        let mut cursor = self.bids.find(doc! {}).await?;
+        let mut res: Vec<Bid> = vec![];
+
+        while let Some(v) = cursor.try_next().await? {
+            res.push(v);
+        }
+
+        match res.is_empty() {
+            true => Ok(None),
+            false => Ok(Some(res)),
+        }
     }
 }
