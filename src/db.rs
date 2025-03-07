@@ -76,4 +76,23 @@ impl Db {
             false => Ok(Some(res)),
         }
     }
+    
+    pub async fn user_bids(&self, user: &User) -> Result<Option<Vec<Bid>>, mongodb::error::Error> {
+        let mut cursor = self.bids.find(doc! {
+        }).await?;
+        let mut res: Vec<Bid> = vec![];
+
+        while let Some(v) = cursor.try_next().await? {
+            res.push(v);
+        }
+
+        match res.is_empty() {
+            true => Ok(None),
+            false => Ok(Some(res)),
+        }
+    }
+
+    // pub async fn bid_add(&self, bid: &Bid) -> Result<Option<Bid>, mongodb::error::Error> {
+    //     self.bid_add(bid);
+    // }
 }
